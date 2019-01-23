@@ -1,6 +1,7 @@
 # Expdf
 
-**TODO: Add description**
+Basic PDF functionality for Elixir. Relies on erlguten. Not in anyway a stable
+API at the moment
 
 ## Installation
 
