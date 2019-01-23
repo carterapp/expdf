@@ -38,4 +38,15 @@ defmodule ExpdfTest do
 
     Expdf.export_and_delete(pdf, filename)
   end
+
+  test 'character test' do
+    filename = "/tmp/test3.pdf"
+
+    pdf =
+      Expdf.start(font: "Courier", font_size: 30, title: "æøå ` '")
+      |> Expdf.add_text("æøåÆØÅ ' ` ", left: 0, top: 0)
+      |> Expdf.add_text("Hello’s Shop - Butique", left: 0, top: 40)
+
+    Expdf.export_and_delete(pdf, filename)
+  end
 end

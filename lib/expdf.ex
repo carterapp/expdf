@@ -11,10 +11,10 @@ defmodule Expdf do
     pdf = :eg_pdf.new()
     :eg_pdf.set_pagesize(pdf, Keyword.get(opts, :pagesize, @default_pagesize))
 
-    opts[:author] && :eg_pdf.set_author(pdf, opts[:author])
-    opts[:title] && :eg_pdf.set_title(pdf, opts[:title])
-    opts[:subject] && :eg_pdf.set_subject(pdf, opts[:subject])
-    opts[:keywords] && :eg_pdf.set_keywords(pdf, opts[:keywords])
+    opts[:author] && :eg_pdf.set_author(pdf, str2ch(opts[:author]))
+    opts[:title] && :eg_pdf.set_title(pdf, str2ch(opts[:title]))
+    opts[:subject] && :eg_pdf.set_subject(pdf, str2ch(opts[:subject]))
+    opts[:keywords] && :eg_pdf.set_keywords(pdf, str2ch(opts[:keywords]))
 
     :eg_pdf.set_font(
       pdf,
@@ -104,7 +104,8 @@ defmodule Expdf do
 
   defp str2ch(str) do
     if is_bitstring(str) do
-      to_charlist(str)
+      # Quick hack to remove non-printable characters
+      to_charlist(str) |> Enum.filter(&(&1 < 256))
     else
       str
     end
