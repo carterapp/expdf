@@ -7,7 +7,9 @@ defmodule Expdf.MixProject do
       version: "0.1.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package(),
+      description: description()
     ]
   end
 
@@ -24,6 +26,15 @@ defmodule Expdf.MixProject do
       {:erlguten, github: "codenaut/erlguten", tag: "8c43bc63972d1023a8693053f25403bd4dff3d24"},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false}
+    ]
+  end
+  defp description() do
+    "Library for generating PDF files from Elixir"
+  end
+  defp package() do
+    [
+      licenses: ["Apache 2.0"],
+      links: %{"GitHub" => "https://github.com/codenaut/guard"}
     ]
   end
 end

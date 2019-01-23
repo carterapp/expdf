@@ -11,10 +11,10 @@ defmodule Expdf do
     pdf = :eg_pdf.new()
     :eg_pdf.set_pagesize(pdf, Keyword.get(opts, :pagesize, @default_pagesize))
 
-    :eg_pdf.set_author(pdf, opts[:author])
-    :eg_pdf.set_title(pdf, opts[:title])
-    :eg_pdf.set_subject(pdf, opts[:subject])
-    :eg_pdf.set_keywords(pdf, opts[:keywords])
+    opts[:author] && :eg_pdf.set_author(pdf, opts[:author])
+    opts[:title] && :eg_pdf.set_title(pdf, opts[:title])
+    opts[:subject] && :eg_pdf.set_subject(pdf, opts[:subject])
+    opts[:keywords] && :eg_pdf.set_keywords(pdf, opts[:keywords])
 
     :eg_pdf.set_font(
       pdf,
@@ -30,9 +30,15 @@ defmodule Expdf do
     pdf
   end
 
+  def add_page(pdf) do
+    page = :eg_pdf.get_page_no(pdf)
+    :eg_pdf.new_page(pdf)
+    set_page(pdf, page + 1)
+  end
+
   def export_and_delete(pdf, filename) do
     {serialised, _page} = :eg_pdf.export(pdf)
-    file = :file.write_file(filename, [serialised])
+    :file.write_file(filename, [serialised])
     :eg_pdf.delete(pdf)
     {:ok, filename}
   end
@@ -156,7 +162,7 @@ defmodule Expdf do
 
     {height, width, lines} =
       Enum.reduce(lines, {0, 0, []}, fn l, {height, width, ls} ->
-        {text, line_opts} = l
+        {text, _line_opts} = l
         {font, font_size} = get_font(pdf, opts)
         line_width = :eg_pdf.get_string_width(pdf, font, font_size, str2ch(text))
         line_height = font_size + line_spacing
@@ -201,7 +207,6 @@ defmodule Expdf do
 
     x = x0 + margin
     y = opts[:top] || y1
-    increment = -1 * line_height
     width_increment = table_width / header_size
     table_height = (1 + Enum.count(items)) * line_height
 
@@ -245,11 +250,19 @@ defmodule Expdf do
           |> Enum.reduce({x, 0}, fn l, {x_offset, idx} ->
             {text, opts} = l
 
-            pdf
-            |> add_text(text, left: padding + x_offset, top: y_offset)
-
             {_header, header_opts} = Enum.at(header, idx)
             width = header_opts[:width] || 1
+
+            extra_offset =
+              if header_opts[:align] == :right do
+                text_width = get_string_width(pdf, text, opts)
+                width * width_increment - text_width - padding
+              else
+                padding
+              end
+
+            pdf
+            |> add_text(text, left: extra_offset + x_offset, top: y_offset)
 
             {x_offset + width * width_increment, idx + 1}
           end)
