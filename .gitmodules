@@ -1,0 +1,3 @@
+[submodule "erl/erlguten"]
+	path = erl/erlguten
+	url = https://github.com/Codenaut/erlguten.git

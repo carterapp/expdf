@@ -9,7 +9,8 @@ defmodule Expdf.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
-      description: description()
+      description: description(),
+      erlc_paths: ["erl/erlguten/src", "erl/erlguten/include"]
     ]
   end
 
@@ -23,7 +24,7 @@ defmodule Expdf.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:erlguten, github: "codenaut/erlguten", tag: "8c43bc63972d1023a8693053f25403bd4dff3d24"},
+      #{:erlguten, github: "codenaut/erlguten", tag: "8c43bc63972d1023a8693053f25403bd4dff3d24"},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false}
     ]
