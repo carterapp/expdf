@@ -3,6 +3,11 @@
 Basic PDF functionality for Elixir. Relies on erlguten. Not in anyway a stable
 API at the moment
 
+
+# Usage
+
+See the testcases for a few examples
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
