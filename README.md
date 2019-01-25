@@ -16,7 +16,7 @@ by adding `expdf` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:expdf, "~> 0.1.1"}
+    {:expdf, "~> 0.1.2"}
   ]
 end
 ```

@@ -4,13 +4,13 @@ defmodule Expdf.MixProject do
   def project do
     [
       app: :expdf,
-      version: "0.1.1",
+      version: "0.1.2",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
       description: description(),
-      erlc_paths: ["erl/erlguten/src", "erl/erlguten/include"]
+      erlc_paths: ["src/erlguten/src", "src/erlguten/include"]
     ]
   end
 
