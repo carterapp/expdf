@@ -45,8 +45,17 @@ defmodule ExpdfTest do
     pdf =
       Expdf.start(font: "Courier", font_size: 30, title: "æøå ` '")
       |> Expdf.add_text("æøåÆØÅ ' ` ", left: 0, top: 0)
-      |> Expdf.add_text("Hello’s Shop - Butique", left: 0, top: 40)
+      |> Expdf.add_text("Hello’s Shop - Boutique", left: 0, top: 40)
 
     Expdf.export_and_delete(pdf, filename)
+  end
+
+  test 'image fill' do
+    filename= "/tmp/imagetest.pdf"
+    Expdf.start()
+    |> Expdf.add_image_fill("test/square.png")
+    |> Expdf.add_image_fill("test/2x4.png")
+    |> Expdf.add_image_fill("test/4x2.png")
+    |> Expdf.export_and_delete(filename)
   end
 end

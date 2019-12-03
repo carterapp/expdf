@@ -36,9 +36,13 @@ defmodule Expdf do
     set_page(pdf, page + 1)
   end
 
-  def export_and_delete(pdf, filename) do
+  def export(pdf, filename) do
     {serialised, _page} = :eg_pdf.export(pdf)
     :file.write_file(filename, [serialised])
+  end
+
+  def export_and_delete(pdf, filename) do
+    export(pdf, filename)
     :eg_pdf.delete(pdf)
     {:ok, filename}
   end
@@ -105,7 +109,7 @@ defmodule Expdf do
   defp str2ch(str) do
     if is_bitstring(str) do
       # Quick hack to remove non-printable characters
-      to_charlist(str) |> Enum.filter(&(&1 < 256))
+      str |> to_charlist() |> Enum.filter(&(&1 < 256))
     else
       str
     end
@@ -137,6 +141,30 @@ defmodule Expdf do
     :eg_pdf.textbr(pdf, content)
 
     :eg_pdf.end_text(pdf)
+    pdf
+  end
+
+  def add_image_fill(pdf, image, opts \\ []) do
+    with {_type, {image_width, image_height, _, _}} <- :eg_pdf_image.get_head_info(image),
+         {_, _, page_width, page_height} <- get_dimensions(pdf, opts) do
+      image_ratio = image_width / image_height
+      page_ratio = page_width / page_height
+
+      {new_width, _new_height, x, y} =
+        if image_ratio > page_ratio do
+          h = page_height * (page_ratio/image_ratio)
+          {page_width, h, 0, (page_height - h) / 2}
+        else
+          w = page_width *  (image_ratio/page_ratio)
+          {w, page_height, (page_width - w) / 2, 0}
+        end
+      add_image(pdf, image, {x, y}, {:width, floor(new_width)})
+    end
+    pdf
+  end
+
+  def add_image(pdf, image, pos, opts \\ []) do
+    :eg_pdf.image(pdf, image, pos, opts)
     pdf
   end
 
@@ -194,7 +222,8 @@ defmodule Expdf do
 
   def add_table(pdf, header, items, opts \\ []) do
     font_size = opts[:font_size] || 12
-    line_height = font_size + 4
+    line_padding = opts[:line_padding] || 4
+    line_height = font_size + line_padding
     margin = opts[:margin] || 10
     padding = opts[:padding] || 0
     {x0, _y0, x1, y1} = get_dimensions(pdf, opts)
